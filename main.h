@@ -6,5 +6,6 @@
 #include <sys/wait.h>
 
 int _putchar(char);
+int _printstring(char *str);
 
 #endif /* MAIN_H */
