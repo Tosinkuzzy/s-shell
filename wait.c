@@ -24,3 +24,10 @@ if (Child_pid == 0)
 print_string("wait for me, wait for me\n");
 sleep(3);
 }
+else
+{
+wait(&status);
+print_string("oh, it's al better now\n");
+}
+return (0);
+}
