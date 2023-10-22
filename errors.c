@@ -34,13 +34,13 @@ return (res);
 *
 * Return: Always 0.
 */
-void p_error(inf_t *inf, char *eptr)
+void p_error(info_t *info, char *eptr)
 {
-_eputs(inf->fname);
+_eputs(info->fname);
 _eputs(": ");
-p_d(inf->line_count, STDERR_FILENO);
+p_d(info->line_count, STDERR_FILENO);
 _eputs(": ");
-_eputs(inf->argv[0]);
+_eputs(info->argv[0]);
 _eputs(": ");
 _eputs(eptr);
 }

@@ -8,7 +8,7 @@
  *
  * Return: Always 0.
  */
-ssize_t ipt_buf(inf_t *inf, char **buf, size_t *len)
+ssize_t ipt_buf(info_t *info, char **buf, size_t *len)
 {
 ssize_t i = 0;
 size_t len_r = 0;
@@ -20,7 +20,7 @@ free(*buf);
 *buf = NULL;
 signal(SIGINT, sigintHandler);
 i = getline(buf, &len_r, stdin);
-i = _getline(inf, buf, &len_r);
+i = _getline(info, buf, &len_r);
 if (i > 0)
 {
 if ((*buf)[i - 1] == '\n')
@@ -28,12 +28,12 @@ if ((*buf)[i - 1] == '\n')
 (*buf)[i - 1] = '\0';
 i--;
 }
-inf->linecount_flag = 1;
+info->linecount_flag = 1;
 rem_comments(*buf);
-build_history_list(inf, *buf, inf->histcount++);
+build_history_list(info, *buf, info->histcount++);
 {
 *len = i;
-inf->cmd_buf = buf;
+info->cmd_buf = buf;
 }
 }
 }
@@ -46,12 +46,12 @@ return (i);
  *
  * Return: Always 0.
  */
-ssize_t get_ipt(inf_t *inf)
+ssize_t get_ipt(info_t *info)
 {
 static char *buf;
 static size_t i, j, len;
 ssize_t r = 0;
-char **buf_p = &(inf->arg), *p;
+char **buf_p = &(info->arg), *p;
 
 _putchar(BUF_FLUSH);
 r = ipt_buf(info, &buf, &len);
@@ -62,10 +62,10 @@ if (len)
 j = i;
 p = buf + i;
 
-check_chain(inf, buf, &j, i, len);
+check_chain(info, buf, &j, i, len);
 while (j < len)
 {
-if (is_chain(inf, buf, &j))
+if (is_chain(info, buf, &j))
 break;
 j++;
 }
@@ -74,7 +74,7 @@ i = j + 1;
 if (i >= len)
 {
 i = len = 0;
-inf->cmd_buf_type = CMD_NORM;
+info->cmd_buf_type = CMD_NORM;
 }
 
 *buf_p = p;
@@ -93,13 +93,13 @@ return (r);
  *
  * Return: Always 0.
  */
-ssize_t rd_buf(inf_t *inf, char *buf, size_t *i)
+ssize_t rd_buf(info_t *info, char *buf, size_t *i)
 {
 ssize_t r = 0;
 
 if (*i)
 return (0);
-r = read(inf->readfd, buf, READ_BUF_SIZE);
+r = read(info->readfd, buf, READ_BUF_SIZE);
 if (r >= 0)
 *i = r;
 return (r);
@@ -113,7 +113,7 @@ return (r);
  *
  * Return: Always 0.
  */
-int _getline(inf_t *inf, char **ptr, size_t *length)
+int _getline(info_t *info, char **ptr, size_t *length)
 {
 static char buf[READ_BUF_SIZE];
 static size_t i, len;
@@ -127,7 +127,7 @@ s = *length;
 if (i == len)
 i = len = 0;
 
-r = read_buf(inf, buf, &len);
+r = read_buf(info, buf, &len);
 if (r == -1 || (r == 0 && len == 0))
 return (-1);
 

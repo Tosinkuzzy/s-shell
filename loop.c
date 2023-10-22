@@ -7,38 +7,38 @@
  *
  * Return: Always 0.
  */
-int hsh(info_t *inf, char **av)
+int hsh(info_t *info, char **av)
 {
 ssize_t r = 0;
 int builtin_ret = 0;
 
 while (r != -1 && builtin_ret != -2)
 {
-clear_inf(inf);
-if (interact(inf))
+clear_info(info);
+if (interact(info))
 _puts("$ ");
 _eputchar(BUF_FLUSH);
-r = get_ipt(inf);
+r = get_ipt(info);
 if (r != -1)
 {
-set_inf(inf, av);
-builtin_ret = find_builtin(inf);
+set_info(info, av);
+builtin_ret = find_builtin(info);
 if (builtin_ret == -1)
-find_cmd(inf);
+find_cmd(info);
 }
-else if (interact(inf))
+else if (interact(info))
 _putchar('\n');
-free_inf(inf, 0);
+free_info(info, 0);
 }
-write_hist(inf);
-free_inf(inf, 1);
-if (!interact(inf) && inf->status)
-exit(inf->status);
+write_hist(info);
+free_info(info, 1);
+if (!interact(info) && info->status)
+exit(info->status);
 if (builtin_ret == -2)
 {
-if (inf->err_num == -1)
-exit(inf->status);
-exit(inf->err_num);
+if (info->err_num == -1)
+exit(info->status);
+exit(info->err_num);
 }
 return (builtin_ret);
 }
@@ -49,7 +49,7 @@ return (builtin_ret);
  *
  * Return: -1, 0 otherwise.
  */
-int find_builtin(inf_t *inf)
+int find_builtin(info_t *info)
 {
 int i, built_in_ret = -1;
 builtin_table builtintbl[] = {
@@ -65,10 +65,10 @@ builtin_table builtintbl[] = {
 };
 
 for (i = 0; builtintbl[i].type; i++)
-if (_strcmp(inf->argv[0], builtintbl[i].type) == 0)
+if (_strcmp(info->argv[0], builtintbl[i].type) == 0)
 {
-inf->line_count++;
-built_in_ret = builtintbl[i].func(inf);
+info->line_count++;
+built_in_ret = builtintbl[i].func(info);
 break;
 }
 return (built_in_ret);
@@ -80,16 +80,16 @@ return (built_in_ret);
  *
  * Return: Always 0.
  */
-void find_cmd(inf_t *inf)
+void find_cmd(info_t *info)
 {
 char *path = NULL;
 int i, k;
 
-inf->path = inf->argv[0];
-if (inf->linecount_flag == 1)
+info->path = info->argv[0];
+if (info->linecount_flag == 1)
 {
-inf->line_count++;
-inf->linecount_flag = 0;
+info->line_count++;
+info->linecount_flag = 0;
 }
 for (i = 0, k = 0; inf->arg[i]; i++)
 if (!is_delim(inf->arg[i], " \t\n"))
@@ -97,21 +97,21 @@ k++;
 if (!k)
 return;
 
-path = find_path(inf, _getenv(inf, "PATH="), inf->argv[0]);
+path = find_path(info, _getenv(info, "PATH="), info->argv[0]);
 if (path)
 {
-inf->path = path;
-fork_cmd(inf);
+info->path = path;
+fork_cmd(info);
 }
 else
 {
-if ((interact(inf) || _getenv(inf, "PATH=")
-|| inf->argv[0][0] == '/') && is_cmd(inf, inf->argv[0]))
-fork_cmd(inf);
-else if (*(inf->arg) != '\n')
+if ((interact(info) || _getenv(info, "PATH=")
+|| info->argv[0][0] == '/') && is_cmd(info, info->argv[0]))
+fork_cmd(info);
+else if (*(info->arg) != '\n')
 {
-inf->status = 127;
-print_error(inf, "not found\n");
+info->status = 127;
+print_error(info, "not found\n");
 }
 }
 }
@@ -122,7 +122,7 @@ print_error(inf, "not found\n");
  *
  * Return: -1, 0 otherwise.
  */
-void fork_cmd(inf_t *inf)
+void fork_cmd(info_t *info)
 {
 pid_t child_pid;
 
@@ -134,9 +134,9 @@ return;
 }
 if (child_pid == 0)
 {
-if (execve(inf->path, inf->argv, get_environ(inf)) == -1)
+if (execve(info->path, info->argv, get_environ(info)) == -1)
 {
-free_inf(inf, 1);
+free_info(info, 1);
 if (errno == EACCES)
 exit(126);
 exit(1);
@@ -145,12 +145,12 @@ exit(1);
 }
 else
 {
-wait(&(inf->status));
-if (WIFEXITED(inf->status))
+wait(&(info->status));
+if (WIFEXITED(info->status))
 {
-inf->status = WEXITSTATUS(inf->status);
-if (inf->status == 126)
-print_error(inf, "Permission denied\n");
+info->status = WEXITSTATUS(info->status);
+if (info->status == 126)
+print_error(info, "Permission denied\n");
 }
 }
 }

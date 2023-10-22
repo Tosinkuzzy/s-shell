@@ -5,15 +5,15 @@
  * @inf: Structure.
  * Return: Always 0
  */
-char **get_environ(inf_t *inf)
+char **get_environ(info_t *info)
 {
-if (!inf->environ || inf->env_changed)
+if (!info->environ || info->env_changed)
 {
-inf->environ = list_to_strings(inf->env);
-inf->env_changed = 0;
+info->environ = list_to_strings(info->env);
+info->env_changed = 0;
 }
 
-return (inf->environ);
+return (info->environ);
 }
 
 /**
@@ -22,9 +22,9 @@ return (inf->environ);
  *  Return: 1, 0 otherwise
  * @var: property
  */
-int _unsetenv(inf_t *inf, char *var)
+int _unsetenv(info_t *info, char *var)
 {
-list_t *node = inf->env;
+list_t *node = info->env;
 size_t i = 0;
 char *p;
 
@@ -36,15 +36,15 @@ while (node)
 p = starts_with(node->str, var);
 if (p && *p == '=')
 {
-inf->env_changed = delete_node_at_index(&(inf->env), i);
+info->env_changed = delete_node_at_index(&(info->env), i);
 i = 0;
-node = inf->env;
+node = info->env;
 continue;
 }
 node = node->next;
 i++;
 }
-return (inf->env_changed);
+return (info->env_changed);
 }
 
 /**
@@ -54,7 +54,7 @@ return (inf->env_changed);
  * @value: string  value
  * Return: Always 0
  */
-int _setenv(inf_t *inf, char *var, char *value)
+int _setenv(info_t *info, char *var, char *value)
 {
 char *buf = NULL;
 list_t *node;
@@ -69,7 +69,7 @@ return (1);
 _strcpy(buf, var);
 _strcat(buf, "=");
 _strcat(buf, value);
-node = inf->env;
+node = info->env;
 while (node)
 {
 p = starts_with(node->str, var);
@@ -77,13 +77,13 @@ if (p && *p == '=')
 {
 free(node->str);
 node->str = buf;
-inf->env_changed = 1;
+info->env_changed = 1;
 return (0);
 }
 node = node->next;
 }
-add_node_end(&(inf->env), buf, 0);
+add_node_end(&(info->env), buf, 0);
 free(buf);
-inf->env_changed = 1;
+info->env_changed = 1;
 return (0);
 }

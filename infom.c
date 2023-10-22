@@ -4,12 +4,12 @@
  * infom - main
  * @inf: address
  */
-void infom(inf_t *inf)
+void infom(info_t *info)
 {
-inf->arg = NULL;
-inf->argv = NULL;
-inf->path = NULL;
-inf->argc = 0;
+info->arg = NULL;
+info->argv = NULL;
+info->path = NULL;
+info->argc = 0;
 }
 
 /**
@@ -17,30 +17,30 @@ inf->argc = 0;
  * @inf: address
  * @av: argument
  */
-void s_infom(inf_t *inf, char **av)
+void s_infom(info_t *info, char **av)
 {
 int i = 0;
 
-inf->fname = av[0];
-if (inf->arg)
+info->fname = av[0];
+if (info->arg)
 {
-inf->argv = strtow(inf->arg, " \t");
-if (!inf->argv)
+info->argv = strtow(info->arg, " \t");
+if (!info->argv)
 {
 
-inf->argv = malloc(sizeof(char *) * 2);
-if (inf->argv)
+info->argv = malloc(sizeof(char *) * 2);
+if (info->argv)
 {
-inf->argv[0] = _strdup(inf->arg);
-inf->argv[1] = NULL;
+info->argv[0] = _strdup(info->arg);
+info->argv[1] = NULL;
 }
 }
-for (i = 0; inf->argv && inf->argv[i]; i++)
+for (i = 0; info->argv && info->argv[i]; i++)
 ;
-inf->argc = i;
+info->argc = i;
 
-replace_alias(inf);
-replace_vars(inf);
+replace_alias(info);
+replace_vars(info);
 }
 }
 
@@ -49,27 +49,27 @@ replace_vars(inf);
  * @inf:  address
  * @all: true if freeing
  */
-void fr_infom(inf_t *inf, int all)
+void fr_infom(info_t *info, int all)
 
 {
-ffr(inf->argv);
-inf->argv = NULL;
-inf->path = NULL;
+ffr(info->argv);
+info->argv = NULL;
+info->path = NULL;
 if (all)
 {
-if (!inf->cmd_buf)
-free(inf->arg);
-if (inf->env)
-free_list(&(inf->env));
-if (inf->history)
-free_list(&(inf->history));
-if (inf->alias)
-free_list(&(inf->alias));
-ffr(inf->environ);
+if (!info->cmd_buf)
+free(info->arg);
+if (info->env)
+free_list(&(info->env));
+if (info->history)
+free_list(&(info->history));
+if (info->alias)
+free_list(&(info->alias));
+ffr(info->environ);
 inf->environ = NULL;
-bfr((void **)inf->cmd_buf);
-if (inf->readfd > 2)
-close(inf->readfd);
+bfr((void **)info->cmd_buf);
+if (info->readfd > 2)
+close(info->readfd);
 _putchar(BUF_FLUSH);
 }
 }

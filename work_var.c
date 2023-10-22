@@ -8,7 +8,7 @@
  *
  * Return: Always 0.
  */
-int is_chain(inf_t *inf, char *buf, size_t *p)
+int is_chain(info_t *info, char *buf, size_t *p)
 {
 size_t j = *p;
 
@@ -16,18 +16,18 @@ if (buf[j] == '|' && buf[j + 1] == '|')
 {
 buf[j] = 0;
 j++;
-inf->cmd_buf_type = CMD_OR;
+info->cmd_buf_type = CMD_OR;
 }
 else if (buf[j] == '&' && buf[j + 1] == '&')
 {
 buf[j] = 0;
 j++;
-inf->cmd_buf_type = CMD_AND;
+info->cmd_buf_type = CMD_AND;
 }
 else if (buf[j] == ';')
 {
 buf[j] = NULL
-inf->cmd_buf_type = CMD_CHAIN;
+info->cmd_buf_type = CMD_CHAIN;
 }
 else
 return (0);
@@ -45,21 +45,21 @@ return (1);
  *
  * Return: Always 0.
  */
-void check_chain(inf_t *inf, char *buf, size_t *p, size_t i, size_t len)
+void check_chain(info_t *info, char *buf, size_t *p, size_t i, size_t len)
 {
 size_t j = *p;
 
-if (inf->cmd_buf_type == CMD_AND)
+if (info->cmd_buf_type == CMD_AND)
 {
-if (inf->status)
+if (info->status)
 {
 buf[i] = 0;
 j = len;
 }
 }
-if (inf->cmd_buf_type == CMD_OR)
+if (info->cmd_buf_type == CMD_OR)
 {
-if (!inf->status)
+if (!info->status)
 {
 buf[i] = 0;
 j = len;
@@ -75,7 +75,7 @@ j = len;
  *
  * Return: 1, 0 otherwise
  */
-int replace_alias(inf_t *inf)
+int replace_alias(info_t *info)
 {
 int i;
 list_t *node;
@@ -83,10 +83,10 @@ char *p;
 
 for (i = 0; i < 10; i++)
 {
-node = node_starts_with(inf->alias, inf->argv[0], '=');
+node = node_starts_with(info->alias, info->argv[0], '=');
 if (!node)
 return (0);
-free(inf->argv[0]);
+free(info->argv[0]);
 p = _strchr(node->str, '=');
 if (!p)
 return (0);
@@ -104,36 +104,36 @@ return (1);
  *
  * Return: 1, 0 otherwise
  */
-int replace_vars(inf_t *inf)
+int replace_vars(info_t *info)
 {
 int i = 0;
 list_t *node;
 
-for (i = 0; inf->argv[i]; i++)
+for (i = 0; info->argv[i]; i++)
 {
-if (inf->argv[i][0] != '$' || !inf->argv[i][1])
+if (info->argv[i][0] != '$' || !info->argv[i][1])
 continue;
 
-if (!_strcmp(inf->argv[i], "$?"))
+if (!_strcmp(info->argv[i], "$?"))
 {
-replace_string(&(inf->argv[i]),
-_strdup(convert_number(inf->status, 10, 0)));
+replace_string(&(info->argv[i]),
+_strdup(convert_number(info->status, 10, 0)));
 continue;
 }
-if (!_strcmp(inf->argv[i], "$$"))
+if (!_strcmp(info->argv[i], "$$"))
 {
-replace_string(&(inf->argv[i]),
+replace_string(&(info->argv[i]),
 _strdup(convert_number(getpid(), 10, 0)));
 continue;
 }
-node = node_starts_with(inf->env, &inf->argv[i][1], '=');
+node = node_starts_with(info->env, &info->argv[i][1], '=');
 if (node)
 {
-replace_string(&(inf->argv[i]),
+replace_string(&(info->argv[i]),
 _strdup(_strchr(node->str, '=') + 1));
 continue;
 }
-replace_string(&inf->argv[i], _strdup(""));
+replace_string(&info->argv[i], _strdup(""));
 
 }
 return (0);

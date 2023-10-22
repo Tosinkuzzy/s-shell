@@ -5,9 +5,9 @@
 * @inf: structure.
 * Return: Always 0
 */
-int _onehistory(inf_t *inf)
+int _onehistory(info_t *info)
 {
-print_list(inf->history);
+print_list(info->history);
 return (0);
 }
 /**
@@ -16,7 +16,7 @@ return (0);
 * @s: string.
 * Return: Always 0.
 */
-int unset_alias(inf_t *inf, char *s)
+int unset_alias(info_t *info, char *s)
 {
 char *p, c;
 int ren;
@@ -38,7 +38,7 @@ return (ren);
 * @s: string.
 * Return: Always 0.
 */
-int set_alias(inf_t *inf, char *s)
+int set_alias(info_t *info, char *s)
 {
 char *p;
 
@@ -46,10 +46,10 @@ p = _strchr(s, '=');
 if (!p)
 return (1);
 if (!*++p)
-return (unset_alias(inf, s));
+return (unset_alias(info, s));
 
-unset_alias(inf, s);
-return (add_node_end(&(inf->alias), s, 0) == NULL);
+unset_alias(info, s);
+return (add_node_end(&(info->alias), s, 0) == NULL);
 }
 /**
 * p_alias - main
@@ -78,15 +78,15 @@ return (1);
 * @inf: structure
 * Return: Always 0.
 */
-int _malias(inf_t *inf)
+int _malias(info_t *info)
 {
 int i = 0;
 char *p = NULL;
 list_t *node = NULL;
 
-if (inf->argc == 1)
+if (info->argc == 1)
 {
-node = inf->alias;
+node = info->alias;
 while (node)
 {
 p_alias(node);
@@ -94,13 +94,13 @@ node = node->next;
 }
 return (0);
 }
-for (i = 1; inf->argv[i]; i++)
+for (i = 1; info->argv[i]; i++)
 {
-p = strchr(inf->argv[i], '=');
+p = strchr(info->argv[i], '=');
 if (p)
-set_alias(inf, inf->argv[i]);
+set_alias(info, info->argv[i]);
 else
-p_alias(node_starts_with(inf->alias, inf->atgv[i], '='));
+p_alias(node_starts_with(info->alias, info->atgv[i], '='));
 }
 return (0);
 }

@@ -5,7 +5,7 @@
 *
 * Return: Always 0
 */
-int _menv(inf_t *inf)
+int _menv(info_t *info)
 {
 print_list_str(info->env);
 return (0);
@@ -16,9 +16,9 @@ return (0);
 * @name: menv
 * Return: Always 0
 */
-char *_getenv(inf_t *inf, const char *name)
+char *_getenv(info_t *info, const char *name)
 {
-list_t *node = inf->env;
+list_t *node = info->env;
 char *ptr;
 
 while (node)
@@ -35,13 +35,13 @@ return (NULL);
 * @inf: structure
 * Return: Always 0
 */
-int _msetenv(inf_t *inf)
+int _msetenv(info_t *info)
 {
 _eputs("Wrong number of arguments\n");
 return (1);
 }
 char *argv[] = {"arg1", "arg2", NULL};
-inf.argv = argv;
+info.argv = argv;
 _msetenv(&inf);
 return (0);
 return (1);
@@ -51,17 +51,17 @@ return (1);
 * @inf: structure
 * Return: Always 0
 */
-int _munsetenv(inf_t *inf)
+int _munsetenv(info_t *info)
 {
 int i;
 
-if (inf->argc == 1)
+if (info->argc == 1)
 {
 _eputs("Too short arguments.\n");
 return (1);
 }
-for (i = 1; i <= inf->argc; i++)
-_munsetenv(inf, inf->argv[i]);
+for (i = 1; i <= info->argc; i++)
+_munsetenv(info, info->argv[i]);
 return (0);
 }
 /**
@@ -69,13 +69,13 @@ return (0);
 * @inf: structure
 * Return: Always 0
 */
-int p_env_list(inf_t *inf)
+int p_env_list(info_t *info)
 {
 list_t *node = NULL;
 size_t d;
 
 for (d = 0; environ[i]; d++)
 add_node_end(&node, environ[i], 0);
-inf->env = node;
+info->env = node;
 return (0);
 }

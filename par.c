@@ -7,11 +7,11 @@
  *
  * Return: 1 if true, 0 otherwise
  */
-int is_cmd(inf_t *inf, char *path)
+int is_cmd(info_t *info, char *path)
 {
 struct stat st;
 
-(void)inf;
+(void)info;
 if (!path || stat(path, &st))
 return (0);
 
@@ -50,7 +50,7 @@ return (buf);
  *
  * Return: Always 0.
  */
-char *find_path(inf_t *inf, char *pathstr, char *cmd)
+char *find_path(info_t *info, char *pathstr, char *cmd)
 {
 int i = 0, curr_pos = 0;
 char *path;
@@ -59,7 +59,7 @@ if (!pathstr)
 return (NULL);
 if ((_strlen(cmd) > 2) && starts_with(cmd, "./"))
 {
-if (is_cmd(inf, cmd))
+if (is_cmd(info, cmd))
 return (cmd);
 }
 while (1)
@@ -74,7 +74,7 @@ else
 _strcat(path, "/");
 _strcat(path, cmd);
 }
-if (is_cmd(inf, path))
+if (is_cmd(info, path))
 return (path);
 if (!pathstr[i])
 break;

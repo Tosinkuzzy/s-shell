@@ -7,11 +7,11 @@
  * Return: Always 0.
  */
 
-char *hist_file(inf_t *inf)
+char *hist_file(info_t *info)
 {
 char *buf, *dir;
 
-dir = _getenv(inf, "HOME=");
+dir = _getenv(info, "HOME=");
 if (!dir)
 return (NULL);
 buf = malloc(sizeof(char) * (_strlen(dir) + _strlen(HIST_FILE) + 2));
@@ -30,10 +30,10 @@ return (buf);
  *
  * Return: 1, else -1
  */
-int write_hist(inf_t *inf)
+int write_hist(info_t *info)
 {
 ssize_t fd;
-char *filename = hist_file(inf);
+char *filename = hist_file(info);
 list_t *node = NULL;
 
 if (!filename)
@@ -43,7 +43,7 @@ fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0644);
 free(filename);
 if (fd == -1)
 return (-1);
-for (node = inf->hist; node; node = node->next)
+for (node = info->hist; node; node = node->next)
 {
 _putsfd(node->str, fd);
 _putfd('\n', fd);
@@ -59,12 +59,12 @@ return (1);
  *
  * Return: Always 0.
  */
-int read_hist(inf_t *inf)
+int read_hist(info_t *info)
 {
 int i, last = 0, linecount = 0;
 ssize_t fd, rdlen, fsize = 0;
 struct stat st;
-char *buf = NULL, *filename = hist_file(inf);
+char *buf = NULL, *filename = hist_file(info);
 
 if (!filename)
 return (0);
@@ -89,17 +89,17 @@ for (i = 0; i < fsize; i++)
 if (buf[i] == '\n')
 {
 buf[i] = 0;
-build_hist_list(inf, buf + last, linecount++);
+build_hist_list(info, buf + last, linecount++);
 last = i + 1;
 }
 if (last != i)
-build_hist_list(inf, buf + last, linecount++);
+build_hist_list(info, buf + last, linecount++);
 free(buf);
-inf->histcount = linecount;
-while (inf->histcount-- >= HIST_MAX)
-delete_node_at_index(&(inf->hist), 0);
-renumber_hist(inf);
-return (inf->histcount);
+info->histcount = linecount;
+while (info->histcount-- >= HIST_MAX)
+delete_node_at_index(&(info->hist), 0);
+renumber_hist(info);
+return (info->histcount);
 }
 /**
  * build_hist_list - main
@@ -109,16 +109,16 @@ return (inf->histcount);
  *
  * Return: Always 0
  */
-int build_hist_list(inf_t *inf, char *buf, int linecount)
+int build_hist_list(info_t *info, char *buf, int linecount)
 {
 list_t *node = NULL;
 
-if (inf->hist)
-node = inf->hist;
+if (info->hist)
+node = info->hist;
 add_node_end(&node, buf, linecount);
 
-if (!inf->hist)
-inf->hist = node;
+if (!info->hist)
+info->hist = node;
 return (0);
 }
 
@@ -128,9 +128,9 @@ return (0);
  *
  * Return: Always 0.
  */
-int renumber_hist(inf_t *inf)
+int renumber_hist(info_t *info)
 {
-list_t *node = inf->hist;
+list_t *node = info->hist;
 int i = 0;
 
 while (node)
@@ -138,5 +138,5 @@ while (node)
 node->num = i++;
 node = node->next;
 }
-return (inf->histcount = i);
+return (info->histcount = i);
 }
