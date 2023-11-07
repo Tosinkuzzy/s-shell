@@ -1,2 +1,2 @@
-6. C - Simple Shell
+C - S-Shell
 this is our second team project
